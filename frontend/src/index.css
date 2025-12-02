@@ -1,0 +1,89 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #1a1a1a;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+#root {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Custom scrollbar for dark theme */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1e1e1e;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #424242;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Monaco editor overrides */
+.monaco-editor .margin {
+  background-color: #1e1e1e !important;
+}
+
+.monaco-editor .line-numbers {
+  color: #858585 !important;
+}
+
+/* Thread indicator styles */
+.thread-indicator {
+  position: absolute;
+  left: 0;
+  width: 4px;
+  background-color: #0078d4;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.thread-indicator:hover {
+  background-color: #1e8ad4;
+}
+
+/* File upload drop zone */
+.drop-zone {
+  border: 2px dashed #3c3c3c;
+  transition: all 0.2s ease;
+}
+
+.drop-zone.drag-over {
+  border-color: #0078d4;
+  background-color: rgba(0, 120, 212, 0.1);
+}
+
