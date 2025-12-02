@@ -1,0 +1,119 @@
+# Approach Document
+## AI-Powered Code Review Assistant
+
+This document outlines the step-by-step development process for building the AI-Powered Code Review Assistant.  
+It serves as a roadmap so that any contributor or agent can determine the current stage of progress toward fulfilling the PRD.
+
+---
+
+## Phase 1: Core UI Setup
+- [ ] Initialize frontend project (React).
+- [ ] Integrate Monaco Editor (or CodeMirror if preferred).
+- [ ] Enable syntax highlighting for multiple languages.
+- [ ] Implement basic code input (paste/write).
+- [ ] Add line/block selection functionality.
+- [ ] **Unit Tests:**  
+  - Verify editor renders correctly.  
+  - Ensure syntax highlighting works for multiple languages.  
+  - Confirm selection logic returns correct line ranges.
+
+---
+
+## Phase 2: Inline Thread System
+- [ ] Create thread data model (`id, file, range, comments[]`).
+- [ ] Implement inline comment UI tied to code selections.
+- [ ] Support multiple independent threads in a single file.
+- [ ] Add persistence layer (temporary local state).
+- [ ] **Unit Tests:**  
+  - Validate thread creation and deletion.  
+  - Ensure comments are tied to correct code ranges.  
+  - Test rendering of multiple threads without overlap.
+
+---
+
+## Phase 3: Backend API & Persistence
+- [ ] Initialize backend (Node.js/Express or Python FastAPI).
+- [ ] Define REST endpoints for thread creation, retrieval, and updates.
+- [ ] Connect backend to AWS RDS (Postgres).
+- [ ] Store threads persistently in database.
+- [ ] **Unit Tests:**  
+  - Test API endpoints (CRUD operations).  
+  - Mock DB interactions to validate persistence logic.  
+  - Ensure error handling for invalid requests.
+
+---
+
+## Phase 4: AI Integration
+- [ ] Abstract AI service layer for pluggable providers.
+- [ ] Integrate with OpenRouter, OpenAI, and AWS Bedrock APIs.
+- [ ] Build prompt template including:
+  - File type
+  - Surrounding context (multi-file support)
+  - Selected block
+  - User query
+- [ ] Return contextual feedback with explanations.
+- [ ] Render GitHub-style diff suggestions inline.
+- [ ] **Unit Tests:**  
+  - Mock AI responses to validate prompt formatting.  
+  - Ensure AI service layer handles multiple providers.  
+  - Test rendering of AI feedback (explanation + diff).
+
+---
+
+## Phase 5: Hosting & Deployment
+- [ ] Configure AWS Amplify for frontend hosting.
+- [ ] Deploy backend API (Amplify or AWS Lambda + API Gateway).
+- [ ] Connect frontend and backend endpoints.
+- [ ] Verify end-to-end workflow in hosted environment.
+- [ ] **Unit Tests:**  
+  - Integration tests for frontend-backend communication.  
+  - Validate deployment scripts (mocked).  
+  - Ensure environment variables (API keys, DB config) load correctly.
+
+---
+
+## Phase 6: Edge Case Handling
+- [ ] Large file support (context slicing).
+- [ ] Nested selections (merge or warn).
+- [ ] Token management for long prompts.
+- [ ] Fallback persistence (local storage if DB unavailable).
+- [ ] **Unit Tests:**  
+  - Test large file handling (mocked context slicing).  
+  - Validate nested selection warnings.  
+  - Ensure fallback persistence works when DB unavailable.
+
+---
+
+## Phase 7: Documentation & Polish
+- [ ] Write `README.md` with setup instructions, architecture notes, and trade-offs.
+- [ ] Document future team collaboration features in README.
+- [ ] Add `PRD.md`, `RESOURCES.md`, `ARCHITECTURE.md`, and `ASP.md` references.
+- [ ] Ensure codebase is clean, commented, and structured.
+- [ ] **Unit Tests:**  
+  - Linting and formatting checks.  
+  - Validate documentation build (if automated).  
+  - Ensure test coverage ≥ 80%.
+
+---
+
+## Phase 8: Future Extensions (Beyond MVP)
+- [ ] Multi-user collaboration (shared threads, dashboards).
+- [ ] Team-level analytics (review hotspots, acceptance rates).
+- [ ] Export feedback summaries (Markdown/JSON).
+- [ ] Integration with Git hosting platforms (GitHub/GitLab).
+- [ ] Advanced security/compliance features.
+
+---
+
+## Progress Tracking
+Each phase contains checkboxes. Contributors should mark completed tasks to indicate progress.  
+This ensures any agent or developer can quickly determine **where the project is in the journey** toward finishing the PRD.
+
+---
+
+## Unit Testing Summary
+- **Frontend:** Jest + React Testing Library.  
+- **Backend:** Jest (Node.js) or Pytest (FastAPI).  
+- **Coverage Goal:** ≥ 80% for core logic.  
+- **Mocking:** AI API calls and DB interactions mocked for deterministic results.  
+- **CI/CD:** Tests run automatically in AWS Amplify build pipeline before deployment.
