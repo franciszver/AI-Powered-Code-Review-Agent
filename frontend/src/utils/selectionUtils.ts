@@ -1,6 +1,16 @@
 import type { editor } from 'monaco-editor';
 
 /**
+ * Monaco editor selection interface
+ */
+interface MonacoSelection {
+  startLineNumber: number;
+  endLineNumber: number;
+  startColumn: number;
+  endColumn: number;
+}
+
+/**
  * Represents a range of selected lines in the code editor
  */
 export interface SelectionRange {
@@ -15,7 +25,7 @@ export interface SelectionRange {
  * Extracts selection range from Monaco editor selection
  */
 export function getSelectionRange(
-  selection: editor.ISelection | null,
+  selection: MonacoSelection | null,
   model: editor.ITextModel | null
 ): SelectionRange | null {
   if (!selection || !model) {

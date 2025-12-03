@@ -9,17 +9,6 @@ export const MODEL_TOKEN_LIMITS: Record<string, number> = {
     'gpt-3.5-turbo': 4096,
     'gpt-3.5-turbo-16k': 16384,
 
-    // Claude models (via OpenRouter or Bedrock)
-    'claude-3-opus': 200000,
-    'claude-3-sonnet': 200000,
-    'claude-3-haiku': 200000,
-    'claude-2': 100000,
-
-    // Bedrock model IDs
-    'anthropic.claude-3-opus-20240229-v1:0': 200000,
-    'anthropic.claude-3-sonnet-20240229-v1:0': 200000,
-    'anthropic.claude-3-haiku-20240307-v1:0': 200000,
-
     // Default
     'default': 4096,
 };

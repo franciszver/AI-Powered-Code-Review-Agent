@@ -139,7 +139,7 @@ export function suggestNonOverlappingRange(
   selection: LineRange,
   existingThreads: Thread[],
   fileName: string,
-  totalLines: number
+  _totalLines: number
 ): LineRange | null {
   const fileThreads = existingThreads
     .filter(t => t.file === fileName)
@@ -193,7 +193,7 @@ export function suggestNonOverlappingRange(
 export function shouldAutoResolve(
   thread: Thread,
   newCode: string,
-  oldCode: string
+  _oldCode: string
 ): boolean {
   // If the selected code has been completely removed, suggest resolving
   if (!newCode.includes(thread.selectedCode)) {

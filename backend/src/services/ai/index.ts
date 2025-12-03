@@ -1,15 +1,11 @@
 import { IAIService, ReviewInput, ReviewOutput } from './types.js';
 import { OpenAIService } from './OpenAIService.js';
-import { OpenRouterService } from './OpenRouterService.js';
-import { BedrockService } from './BedrockService.js';
 
 export * from './types.js';
 export * from './promptBuilder.js';
 export { OpenAIService } from './OpenAIService.js';
-export { OpenRouterService } from './OpenRouterService.js';
-export { BedrockService } from './BedrockService.js';
 
-type AIProvider = 'openai' | 'openrouter' | 'bedrock';
+type AIProvider = 'openai';
 
 /**
  * AI Service Factory
@@ -35,12 +31,6 @@ export class AIServiceFactory {
       case 'openai':
         service = new OpenAIService();
         break;
-      case 'openrouter':
-        service = new OpenRouterService();
-        break;
-      case 'bedrock':
-        service = new BedrockService();
-        break;
       default:
         throw new Error(`Unknown AI provider: ${selectedProvider}`);
     }
@@ -53,7 +43,7 @@ export class AIServiceFactory {
    * Get all available services
    */
   static getAvailableServices(): IAIService[] {
-    const providers: AIProvider[] = ['openai', 'openrouter', 'bedrock'];
+    const providers: AIProvider[] = ['openai'];
     const available: IAIService[] = [];
 
     for (const provider of providers) {

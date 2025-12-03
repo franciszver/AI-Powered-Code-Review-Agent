@@ -1,0 +1,42 @@
+# EB Ignore - this file overrides .gitignore for deployments
+# We NEED to include dist/ for deployment
+
+# Dependencies (will be installed on server)
+node_modules/
+
+# Source files (not needed - we deploy compiled JS)
+src/
+
+# Test files
+**/__tests__/
+*.test.ts
+*.test.js
+
+# TypeScript source maps (optional, can keep for debugging)
+# *.map
+
+# Dev config
+.env
+.env.*
+tsconfig.json
+vitest.config.ts
+
+# IDE
+.idea/
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# EB config folder (but keep config files)
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
+
+# Serverless (not using it)
+serverless.yml
+

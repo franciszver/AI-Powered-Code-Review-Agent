@@ -17,24 +17,6 @@ vi.mock('../OpenAIService.js', () => ({
   })),
 }));
 
-vi.mock('../OpenRouterService.js', () => ({
-  OpenRouterService: vi.fn().mockImplementation(() => ({
-    provider: 'openrouter',
-    model: 'claude-3',
-    isAvailable: vi.fn().mockReturnValue(false),
-    review: vi.fn().mockRejectedValue(new Error('Not available')),
-  })),
-}));
-
-vi.mock('../BedrockService.js', () => ({
-  BedrockService: vi.fn().mockImplementation(() => ({
-    provider: 'bedrock',
-    model: 'claude-3-sonnet',
-    isAvailable: vi.fn().mockReturnValue(false),
-    review: vi.fn().mockRejectedValue(new Error('Not available')),
-  })),
-}));
-
 describe('AIServiceFactory', () => {
   beforeEach(() => {
     AIServiceFactory.clearInstances();
