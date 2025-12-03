@@ -353,25 +353,6 @@ handler = APIHandler()
     setShowThreadPanel(true);
   }, [files, activeFileIndex, createThread, setActiveThread]);
 
-  // Update editor markers when switching files
-  const updateEditorMarkers = useCallback(() => {
-    const currentFile = files[activeFileIndex];
-    if (!currentFile || !editorRef.current) return;
-
-    const issues = fileIssues[currentFile.name] || [];
-    if (issues.length > 0) {
-      editorRef.current.setIssueMarkers(issues);
-    } else {
-      editorRef.current.clearIssueMarkers();
-    }
-  }, [files, activeFileIndex, fileIssues]);
-
-  // Update markers when file changes
-  // Using setTimeout to ensure editor is mounted
-  const handleEditorReady = useCallback(() => {
-    setTimeout(updateEditorMarkers, 100);
-  }, [updateEditorMarkers]);
-
   const handleAskAI = useCallback(() => {
     const currentFile = files[activeFileIndex];
     if (!selection || !currentFile) return;
