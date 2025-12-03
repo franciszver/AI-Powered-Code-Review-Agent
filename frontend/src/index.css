@@ -87,3 +87,35 @@ body {
   background-color: rgba(0, 120, 212, 0.1);
 }
 
+/* Issue markers in Monaco editor glyph margin */
+.issue-glyph-error {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23f85149'%3E%3Ccircle cx='8' cy='8' r='6'/%3E%3Cpath fill='white' d='M7 4h2v5H7zm0 6h2v2H7z'/%3E%3C/svg%3E") center center no-repeat;
+  background-size: 14px;
+  cursor: pointer;
+}
+
+.issue-glyph-warning {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23d29922'%3E%3Cpath d='M8 1L1 15h14L8 1z'/%3E%3Cpath fill='%231e1e1e' d='M7 6h2v4H7zm0 5h2v2H7z'/%3E%3C/svg%3E") center center no-repeat;
+  background-size: 14px;
+  cursor: pointer;
+}
+
+.issue-glyph-info {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%2358a6ff'%3E%3Ccircle cx='8' cy='8' r='6'/%3E%3Cpath fill='%231e1e1e' d='M7 4h2v2H7zm0 3h2v5H7z'/%3E%3C/svg%3E") center center no-repeat;
+  background-size: 14px;
+  cursor: pointer;
+}
+
+/* Issue line highlighting */
+.issue-line-error {
+  background-color: rgba(248, 81, 73, 0.1) !important;
+}
+
+.issue-line-warning {
+  background-color: rgba(210, 153, 34, 0.1) !important;
+}
+
+.issue-line-info {
+  background-color: rgba(88, 166, 255, 0.1) !important;
+}
+

@@ -197,6 +197,29 @@ export async function generateReview(data: {
 }
 
 /**
+ * Scan file for issues
+ */
+export interface ScanIssue {
+  id: string;
+  startLine: number;
+  endLine: number;
+  severity: 'error' | 'warning' | 'info';
+  message: string;
+  suggestion?: string;
+}
+
+export async function scanFile(data: {
+  code: string;
+  language: string;
+  fileName: string;
+}): Promise<{ issues: ScanIssue[] }> {
+  return apiRequest<{ issues: ScanIssue[] }>('/api/ai/scan', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  });
+}
+
+/**
  * Get available AI providers
  */
 export async function getAIProviders(): Promise<{
