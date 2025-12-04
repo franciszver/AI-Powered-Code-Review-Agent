@@ -86,7 +86,9 @@ describe('InlineThread', () => {
   it('shows selected code preview', () => {
     renderWithProvider(mockThread);
     
-    expect(screen.getByText(/const x = 1/)).toBeInTheDocument();
+    // Use getAllByText since the code appears in both the preview and the diff
+    const codeElements = screen.getAllByText(/const x = 1/);
+    expect(codeElements.length).toBeGreaterThan(0);
   });
 
   it('collapses and expands thread content', () => {

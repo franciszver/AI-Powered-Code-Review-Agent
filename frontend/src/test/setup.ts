@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom';
 import { vi } from 'vitest';
+import { createElement } from 'react';
 
 // Mock Monaco Editor
 vi.mock('@monaco-editor/react', () => ({
@@ -9,6 +10,10 @@ vi.mock('@monaco-editor/react', () => ({
       const mockEditor = {
         updateOptions: vi.fn(),
         onDidChangeCursorSelection: vi.fn(),
+        onMouseDown: vi.fn(),
+        deltaDecorations: vi.fn(() => []),
+        revealLineInCenter: vi.fn(),
+        setSelection: vi.fn(),
         focus: vi.fn(),
         getModel: vi.fn(() => ({
           getValue: () => value,
@@ -20,20 +25,27 @@ vi.mock('@monaco-editor/react', () => ({
         getPosition: vi.fn(() => ({ lineNumber: 1, column: 1 })),
         setPosition: vi.fn(),
       };
-      const mockMonaco = {};
+      const mockMonaco = {
+        editor: {
+          MouseTargetType: {
+            GUTTER_GLYPH_MARGIN: 2,
+          },
+        },
+      };
       setTimeout(() => onMount(mockEditor, mockMonaco), 0);
     }
 
-    return (
-      <div data-testid="monaco-editor-mock">
-        <textarea
-          data-testid="monaco-textarea"
-          value={value}
-          onChange={(e) => onChange?.(e.target.value)}
-          readOnly={false}
-        />
-        {loading}
-      </div>
+    // Use createElement instead of JSX to avoid needing .tsx extension
+    return createElement(
+      'div',
+      { 'data-testid': 'monaco-editor-mock' },
+      createElement('textarea', {
+        'data-testid': 'monaco-textarea',
+        value: value,
+        onChange: (e: { target: { value: string } }) => onChange?.(e.target.value),
+        readOnly: false,
+      }),
+      loading
     );
   }),
   Editor: vi.fn(),

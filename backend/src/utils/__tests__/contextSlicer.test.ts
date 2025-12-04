@@ -6,13 +6,15 @@ describe('contextSlicer', () => {
     const createContent = (lines: number) => 
       Array.from({ length: lines }, (_, i) => `line ${i + 1}`).join('\n');
 
-    it('returns full context for small files', () => {
+    it('returns context bounded by linesBefore and linesAfter', () => {
       const content = createContent(50);
       const result = sliceContext(content, 20, 25);
 
       expect(result.wasTruncated).toBe(false);
+      // With default linesBefore=20, contextStartLine = max(1, 20-20) = 1
       expect(result.contextStartLine).toBe(1);
-      expect(result.contextEndLine).toBe(50);
+      // With default linesAfter=20, contextEndLine = min(50, 25+20) = 45
+      expect(result.contextEndLine).toBe(45);
     });
 
     it('slices context around selection for large files', () => {

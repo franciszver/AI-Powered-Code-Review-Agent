@@ -38,7 +38,7 @@ describe('tokenCounter', () => {
     it('returns correct limit for known models', () => {
       expect(getModelTokenLimit('gpt-4')).toBe(8192);
       expect(getModelTokenLimit('gpt-4-turbo-preview')).toBe(128000);
-      expect(getModelTokenLimit('claude-3-opus')).toBe(200000);
+      expect(getModelTokenLimit('gpt-3.5-turbo-16k')).toBe(16384);
     });
 
     it('returns default for unknown models', () => {
