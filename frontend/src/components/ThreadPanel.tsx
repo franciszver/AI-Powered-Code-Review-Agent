@@ -41,10 +41,18 @@ export default function ThreadPanel({ currentFile, showAllFiles = false }: Threa
     return groups;
   }, [filteredThreads]);
 
+  // Only show active thread if it belongs to the current file (or showing all files)
   const activeThread = useMemo(() => {
     if (!state.activeThreadId) return null;
-    return state.threads.find(t => t.id === state.activeThreadId) || null;
-  }, [state.activeThreadId, state.threads]);
+    const thread = state.threads.find(t => t.id === state.activeThreadId);
+    if (!thread) return null;
+    // If showing all files, always show active thread
+    // Otherwise, only show if it matches the current file
+    if (showAllFiles || thread.file === currentFile) {
+      return thread;
+    }
+    return null;
+  }, [state.activeThreadId, state.threads, currentFile, showAllFiles]);
 
   const unresolvedCount = filteredThreads.filter(t => !t.resolved).length;
   const resolvedCount = filteredThreads.filter(t => t.resolved).length;

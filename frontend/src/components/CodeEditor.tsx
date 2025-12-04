@@ -11,6 +11,7 @@ export interface CodeIssue {
   severity: 'error' | 'warning' | 'info';
   message: string;
   suggestion?: string;
+  fileName?: string; // File this issue belongs to
 }
 
 // Methods exposed to parent via ref

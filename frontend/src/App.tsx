@@ -278,17 +278,31 @@ handler = APIHandler()
     setFiles(prev => {
       const updated = prev.filter((_, i) => i !== index);
       // Adjust active file index if needed
-      setActiveFileIndex(currentIndex => {
-        if (updated.length === 0) return 0;
-        if (index < currentIndex) return currentIndex - 1;
-        if (index === currentIndex && currentIndex >= updated.length) {
-          return updated.length - 1;
+      let newActiveIndex = activeFileIndex;
+      if (updated.length === 0) {
+        newActiveIndex = 0;
+      } else if (index < activeFileIndex) {
+        newActiveIndex = activeFileIndex - 1;
+      } else if (index === activeFileIndex && activeFileIndex >= updated.length) {
+        newActiveIndex = updated.length - 1;
+      }
+      
+      setActiveFileIndex(newActiveIndex);
+      
+      // Clear markers and re-apply for new active file
+      if (editorRef.current) {
+        editorRef.current.clearIssueMarkers();
+        const newActiveFile = updated[newActiveIndex];
+        if (newActiveFile && fileIssues[newActiveFile.name]) {
+          setTimeout(() => {
+            editorRef.current?.setIssueMarkers(fileIssues[newActiveFile.name]);
+          }, 0);
         }
-        return currentIndex;
-      });
+      }
+      
       return updated;
     });
-  }, []);
+  }, [activeFileIndex, fileIssues]);
 
   // Scan file for issues using AI
   const handleScanFile = useCallback(async () => {
@@ -306,16 +320,22 @@ handler = APIHandler()
       console.log('Scan result:', result);
       console.log('Issues found:', result.issues);
 
+      // Add file name to each issue for tracking
+      const issuesWithFile = result.issues.map(issue => ({
+        ...issue,
+        fileName: currentFile.name,
+      }));
+
       // Store issues for this file
       setFileIssues(prev => ({
         ...prev,
-        [currentFile.name]: result.issues,
+        [currentFile.name]: issuesWithFile,
       }));
 
-      // Show issues in editor
-      if (editorRef.current && result.issues.length > 0) {
-        console.log('Setting issue markers for', result.issues.length, 'issues');
-        editorRef.current.setIssueMarkers(result.issues);
+      // Show issues in editor (use issuesWithFile to include file name)
+      if (editorRef.current && issuesWithFile.length > 0) {
+        console.log('Setting issue markers for', issuesWithFile.length, 'issues');
+        editorRef.current.setIssueMarkers(issuesWithFile);
       } else {
         console.log('No issues to display or editor not ready');
       }
@@ -330,22 +350,38 @@ handler = APIHandler()
 
   // Handle clicking on an issue marker
   const handleIssueClick = useCallback((issue: CodeIssue) => {
-    const currentFile = files[activeFileIndex];
-    if (!currentFile) return;
+    // Get the file this issue belongs to (from issue.fileName or fall back to current file)
+    const issueFileName = (issue as CodeIssue & { fileName?: string }).fileName;
+    const targetFile = issueFileName 
+      ? files.find(f => f.name === issueFileName) 
+      : files[activeFileIndex];
+    
+    if (!targetFile) {
+      console.error('Could not find file for issue:', issue);
+      return;
+    }
+
+    // If issue is for a different file, switch to that file first
+    if (issueFileName && issueFileName !== files[activeFileIndex]?.name) {
+      const fileIndex = files.findIndex(f => f.name === issueFileName);
+      if (fileIndex >= 0) {
+        setActiveFileIndex(fileIndex);
+      }
+    }
 
     // Select the issue lines and trigger Ask AI
     if (editorRef.current) {
       editorRef.current.selectLines(issue.startLine, issue.endLine);
     }
 
-    // Create a thread for this issue
+    // Create a thread for this issue using the correct file's content
     const thread = createThread({
-      file: currentFile.name,
+      file: targetFile.name,
       range: {
         startLine: issue.startLine,
         endLine: issue.endLine,
       },
-      selectedCode: currentFile.content.split('\n').slice(issue.startLine - 1, issue.endLine).join('\n'),
+      selectedCode: targetFile.content.split('\n').slice(issue.startLine - 1, issue.endLine).join('\n'),
       initialComment: `Review this code: ${issue.message}`,
     });
 
@@ -372,6 +408,26 @@ handler = APIHandler()
   }, [selection, createThread, setActiveThread, files, activeFileIndex]);
 
   const activeFile = files[activeFileIndex];
+
+  // Clear and re-apply issue markers when switching files
+  const handleFileChange = useCallback((index: number) => {
+    setActiveFileIndex(index);
+    // Clear selection when switching files
+    setSelection(null);
+    // Clear active thread (will show threads for new file)
+    setActiveThread(null);
+    // Clear existing markers
+    if (editorRef.current) {
+      editorRef.current.clearIssueMarkers();
+    }
+    // Apply markers for the new file (after state update)
+    const newFile = files[index];
+    if (newFile && fileIssues[newFile.name] && editorRef.current) {
+      setTimeout(() => {
+        editorRef.current?.setIssueMarkers(fileIssues[newFile.name]);
+      }, 0);
+    }
+  }, [files, fileIssues, setActiveThread]);
 
   return (
     <div className="flex flex-col h-screen bg-[#1e1e1e]">
@@ -469,7 +525,7 @@ handler = APIHandler()
                 className={`flex items-center justify-between px-3 py-2 cursor-pointer hover:bg-[#2a2d2e] ${
                   index === activeFileIndex ? 'bg-[#37373d]' : ''
                 }`}
-                onClick={() => setActiveFileIndex(index)}
+                onClick={() => handleFileChange(index)}
               >
                 <span className="text-sm text-gray-300 truncate">{file.name}</span>
                 <button
@@ -503,7 +559,7 @@ handler = APIHandler()
                         ? 'bg-[#1e1e1e] text-white'
                         : 'bg-[#2d2d2d] text-gray-400 hover:bg-[#37373d]'
                     }`}
-                    onClick={() => setActiveFileIndex(index)}
+                    onClick={() => handleFileChange(index)}
                   >
                     <span className="text-sm">{file.name}</span>
                     <button
