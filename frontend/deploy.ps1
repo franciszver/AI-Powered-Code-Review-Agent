@@ -5,8 +5,16 @@ param(
     [string]$AppName = "ai-code-review-frontend",
     [string]$BranchName = "main",
     [string]$Region = "us-west-2",
-    [string]$Profile = $env:AWS_PROFILE ?? "default"
+    [string]$Profile
 )
+
+# Assign default value to Profile if not provided or empty
+if ([string]::IsNullOrWhiteSpace($Profile)) {
+    $Profile = $env:AWS_PROFILE
+}
+if ([string]::IsNullOrWhiteSpace($Profile)) {
+    $Profile = "default"
+}
 
 $ErrorActionPreference = "Stop"
 $env:AWS_PROFILE = $Profile

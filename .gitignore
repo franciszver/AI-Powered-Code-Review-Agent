@@ -51,6 +51,20 @@ coverage/
 .aws-sam/
 samconfig.toml
 
+# Serverless Framework
+.serverless/
+
+# Elastic Beanstalk
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+eb-options.json
+
+# CloudFront temp configs
+cf-*.json
+
+# Frontend environment files
+frontend/.env.production
+
 # Amplify
 amplify/#current-cloud-backend
 amplify/.config/local-*
