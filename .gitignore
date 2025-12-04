@@ -62,6 +62,10 @@ eb-options.json
 # CloudFront temp configs
 cf-*.json
 
+# Temporary ZIP files
+*.zip
+!node_modules/@serverless/utils/test/fixture.zip
+
 # Frontend environment files
 frontend/.env.production
 

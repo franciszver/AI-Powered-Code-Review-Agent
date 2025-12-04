@@ -55,18 +55,60 @@ $zipUploadUrl = $deployment.zipUploadUrl
 # Step 4: Zip and upload the dist folder
 Write-Host "`n[4/4] Uploading to Amplify..." -ForegroundColor Yellow
 
-# Create zip file using tar (preserves directory structure better)
+# Create zip file with proper directory entries
 $zipPath = "dist.zip"
+$zipFullPath = Join-Path $PWD $zipPath
+$distFullPath = Join-Path $PWD "dist"
+
 if (Test-Path $zipPath) { Remove-Item $zipPath }
 
-# Change to dist directory and zip from there
-Push-Location dist
-tar -a -c -f "..\$zipPath" *
-Pop-Location
+# Use .NET ZipFile with explicit directory entries
+Add-Type -AssemblyName System.IO.Compression
+Add-Type -AssemblyName System.IO.Compression.FileSystem
 
-# Upload to Amplify
+$zip = [System.IO.Compression.ZipFile]::Open($zipFullPath, [System.IO.Compression.ZipArchiveMode]::Create)
+try {
+    # Get all files and directories
+    $items = Get-ChildItem -Path $distFullPath -Recurse
+    
+    # First, add directory entries
+    $dirs = $items | Where-Object { $_.PSIsContainer } | ForEach-Object {
+        $relativePath = $_.FullName.Substring($distFullPath.Length + 1).Replace('\', '/') + '/'
+        [void]$zip.CreateEntry($relativePath)
+    }
+    
+    # Then add files
+    $items | Where-Object { -not $_.PSIsContainer } | ForEach-Object {
+        $relativePath = $_.FullName.Substring($distFullPath.Length + 1).Replace('\', '/')
+        [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($zip, $_.FullName, $relativePath) | Out-Null
+    }
+} finally {
+    $zip.Dispose()
+}
+
+# Verify zip file was created and is valid
+if (-not (Test-Path $zipPath)) {
+    Write-Host "Error: ZIP file was not created!" -ForegroundColor Red
+    exit 1
+}
+
+$zipSize = (Get-Item $zipPath).Length
+if ($zipSize -eq 0) {
+    Write-Host "Error: ZIP file is empty!" -ForegroundColor Red
+    exit 1
+}
+
+Write-Host "Created ZIP file: $zipPath ($zipSize bytes)" -ForegroundColor Green
+
+# Upload to Amplify using Invoke-WebRequest (more reliable for binary files)
 $headers = @{ "Content-Type" = "application/zip" }
-Invoke-RestMethod -Uri $zipUploadUrl -Method Put -InFile $zipPath -Headers $headers
+try {
+    $response = Invoke-WebRequest -Uri $zipUploadUrl -Method Put -InFile $zipPath -Headers $headers -UseBasicParsing
+    Write-Host "Upload successful" -ForegroundColor Green
+} catch {
+    Write-Host "Upload failed: $_" -ForegroundColor Red
+    exit 1
+}
 
 # Start the deployment
 aws amplify start-deployment --app-id $appId --branch-name $BranchName --job-id $jobId --region $Region | Out-Null
